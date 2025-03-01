@@ -1,0 +1,116 @@
+// script.js
+class ZephyrAssistant {
+    constructor() {
+        this.chatBox = document.getElementById('chat-box');
+        this.userInput = document.getElementById('user-input');
+        this.weatherApiKey = '089cb559edf9127ca22ca63afa575f8c'; // Replace with your API key
+    }
+
+    async handleCommand() {
+        const command = this.userInput.value.toLowerCase();
+        if (!command) return;
+
+        this.addMessage(command, 'user');
+        this.userInput.value = '';
+
+        let response;
+        if (command.includes('calculate')) {
+            response = this.calculate(command);
+        } else if (command.includes('weather')) {
+            response = await this.getWeather(command);
+        } else if (command.includes('joke')) {
+            response = this.tellJoke();
+        } else if (command.includes('help')) {
+            response = this.showHelp();
+        } else {
+            response = "I'm not sure how to help with that. Try saying 'help' for available commands.";
+        }
+
+        this.addMessage(response, 'assistant');
+    }
+
+    addMessage(text, sender) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${sender}-message`;
+        messageDiv.textContent = text;
+        this.chatBox.appendChild(messageDiv);
+        this.chatBox.scrollTop = this.chatBox.scrollHeight;
+    }
+
+    calculate(command) {
+        try {
+            const expression = command.replace('calculate', '').trim();
+            const result = eval(expression.replace(/plus/g, '+')
+                                       .replace(/minus/g, '-')
+                                       .replace(/times/g, '*')
+                                       .replace(/divided by/g, '/'));
+            return `Result: ${result}`;
+        } catch (error) {
+            return "Sorry, I couldn't perform that calculation.";
+        }
+    }
+
+    async getWeather(command) {
+        try {
+            const city = command.split('in')[1].trim();
+            const response = await fetch(
+                `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${this.weatherApiKey}&units=metric`
+            );
+            const data = await response.json();
+            return `The weather in ${city} is ${data.weather[0].description} with a temperature of ${data.main.temp}°C`;
+        } catch (error) {
+            return "Sorry, I couldn't get the weather information.";
+        }
+    }
+
+    tellJoke() {
+        const jokes = [
+            "Why don't scientists trust atoms? Because they make up everything!",
+            "What do you call a bear with no teeth? A gummy bear!",
+            // Add all your jokes here
+        ];
+        return jokes[Math.floor(Math.random() * jokes.length)];
+    }
+
+    showHelp() {
+        return `
+            Available commands:
+            1. Calculate: "calculate 2 plus 2"
+            2. Weather: "weather in [city]"
+            3. Jokes: "tell me a joke"
+            4. Help: "help"
+        `;
+    }
+}
+
+const zephyr = new ZephyrAssistant();
+
+function handleCommand() {
+    zephyr.handleCommand();
+}
+
+// Add voice recognition
+function startVoiceRecognition() {
+    if ('webkitSpeechRecognition' in window) {
+        const recognition = new webkitSpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.onresult = function(event) {
+            const command = event.results[0][0].transcript;
+            document.getElementById('user-input').value = command;
+            handleCommand();
+        };
+
+        recognition.start();
+    } else {
+        alert('Voice recognition is not supported in this browser.');
+    }
+}
+
+// Handle Enter key
+document.getElementById('user-input').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        handleCommand();
+    }
+});
