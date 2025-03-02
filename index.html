@@ -1,0 +1,39 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zephyr Assistant</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>ZEPHYR ASSISTANT</h1>
+            <p>Your Personal Voice Assistant</p>
+        </header>
+
+        <div class="chat-container">
+            <div id="chat-box" class="chat-box"></div>
+            
+            <div class="input-area">
+                <input type="text" id="user-input" placeholder="Type your command...">
+                <button onclick="handleCommand()" class="send-btn">Send</button>
+                <button onclick="startVoiceRecognition()" class="voice-btn">🎤</button>
+            </div>
+        </div>
+
+        <div class="features">
+            <h2>Available Commands:</h2>
+            <ul>
+                <li>Calculate: "calculate 2 plus 2"</li>
+                <li>Weather: "weather in London"</li>
+                <li>Jokes: "tell me a joke"</li>
+                <li>Help: "help"</li>
+            </ul>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
